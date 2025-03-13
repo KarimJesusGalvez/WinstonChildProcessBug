@@ -1,0 +1,14 @@
+{
+  "name": "winstonchildprocessbug",
+  "version": "0.0.1",
+  "description": "winsto tryout",
+  "main": "Runner.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "winston": "^3.17.0"
+  }
+}
