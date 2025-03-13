@@ -4,11 +4,12 @@
   "description": "winsto tryout",
   "main": "Runner.js",
   "scripts": {
-    "test": "jest"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "mocha": "^11.1.0",
     "sinon": "^19.0.2",
     "winston": "^3.17.0"
   }
