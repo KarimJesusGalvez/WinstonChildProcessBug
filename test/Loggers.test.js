@@ -7,7 +7,7 @@ const factory = require('../Config/Loggers/LoggerFactory');
 const w_logger = require('winston').Logger;
 const w_transports = require('winston').transports;
 const assert = require("assert");
-const rimraf = require("rimraf").manualSync
+const rimraf = require("rimraf").windowsSync
 
 
 describe('Formats', function () {
@@ -57,11 +57,11 @@ describe('Trasports', function () {
       });
       describe('CreateFileTransport', function () {
         before(function () {
-          mkdirSync("./test/.TempFilesTrasport", { recursive: true } )
+          mkdirSync("./test/__TestTempFiles", { recursive: true } )
         });
         const tests = [
-            {args: ["PathTo/MsgOrigin", "info", resolve(__dirname + "/.TempFilesTrasport")]},
-            {args: ["PathTo/MsgOrigin", "error", resolve(__dirname + "/.TempFilesTrasport")]}
+            {args: ["PathTo/MsgOrigin", "info", resolve(__dirname + "/__TestTempFiles")]},
+            {args: ["PathTo/MsgOrigin", "error", resolve(__dirname + "/__TestTempFiles")]}
           ];
           tests.forEach(({args}) => {
               it(`can generate an ${args[1]} file format with a path`, function () {
@@ -74,7 +74,7 @@ describe('Trasports', function () {
                 });
           });
           after(function () {
-            rimraf("./test/.TempFilesTrasport")
+            try{rimraf("./test/__TestTempFiles");}catch{}
           });
       });
   });
