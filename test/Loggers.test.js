@@ -3,6 +3,8 @@ const {pid, ppid} = require('node:process');
 const {resolve, sep} = require("node:path")
 const formats = require('../Config/Loggers/Formats');
 const transports = require('../Config/Loggers/Transports');
+const factory = require('../Config/Loggers/LoggerFactory');
+const w_logger = require('winston').Logger;
 const w_transports = require('winston').transports;
 const assert = require("assert");
 const rimraf = require("rimraf").manualSync
@@ -76,3 +78,29 @@ describe('Trasports', function () {
           });
       });
   });
+
+  describe('LoggerFactory', function () {
+
+    describe('CreateLogger', function () {
+      const tests = [
+          {args: ["info", []]},
+          {args: ["error", []]}
+        ];
+      
+        tests.forEach(({args}) => {
+          it(`can create a ${args[0]} logger with ${args[1].length} transporters`, function () {
+              const logger = factory.createLogger(...args);
+              logger.close();
+              assert(typeof logger, typeof w_logger)
+              assert(logger.level, args[0]);
+          });
+        });
+      });
+      it(`can generate a default logger`, function () {
+        const logger = factory.createDefaultLogger("testOrigin");
+        logger.close();
+        assert(typeof logger, typeof w_logger)
+        assert(logger.level, "info");
+
+      });
+});
