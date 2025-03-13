@@ -1,5 +1,11 @@
-var formats = require('../Config/Loggers/Formats');
-var assert = require("assert");
+const { mkdirSync, rmSync} = require('node:fs');
+const {pid, ppid} = require('node:process');
+const {resolve, sep} = require("node:path")
+const formats = require('../Config/Loggers/Formats');
+const transports = require('../Config/Loggers/Transports');
+const w_transports = require('winston').transports;
+const assert = require("assert");
+const rimraf = require("rimraf").manualSync
 
 
 describe('Formats', function () {
@@ -19,7 +25,7 @@ describe('Formats', function () {
     });
     describe('CreateFileFormat', function () {
         const tests = [
-                {args: ["A/Path/To/File", "info", ]},
+                {args: ["A/Path/To/File", "info"]},
                 {args: ["A/Path/To/File", "error"]}
         ];
         tests.forEach(({args}) => {
@@ -31,17 +37,42 @@ describe('Formats', function () {
     });
 });
 
+describe('Trasports', function () {
 
-// it("calls callback with deserialized data", function () {
-//     var callback = sinon.fake();
-//     getTodos(42, callback);
-  
-//     // This is part of the FakeXMLHttpRequest API
-//     server.requests[0].respond(
-//       200,
-//       { "Content-Type": "application/json" },
-//       JSON.stringify([{ id: 1, text: "Provide examples", done: true }]),
-//     );
-  
-//     assert(callback.calledOnce);
-//   });
+    describe('CreateConsoleTransport', function () {
+      const tests = [
+          {args: ["A/Path/To/File", "info", ]},
+          {args: ["A/Path/To/File", "error"]}
+        ];
+      
+        tests.forEach(({args}) => {
+          it(`can generate an ${args[1]} console format with a path`, function () {
+              const transport = transports.createConsoleTransport(...args);
+              assert(typeof transport, typeof w_transports.Console)
+              assert(transport.level, args[1]);
+          });
+        });
+      });
+      describe('CreateFileTransport', function () {
+        before(function () {
+          mkdirSync("./test/.TempFilesTrasport", { recursive: true } )
+        });
+        const tests = [
+            {args: ["PathTo/MsgOrigin", "info", resolve(__dirname + "/.TempFilesTrasport")]},
+            {args: ["PathTo/MsgOrigin", "error", resolve(__dirname + "/.TempFilesTrasport")]}
+          ];
+          tests.forEach(({args}) => {
+              it(`can generate an ${args[1]} file format with a path`, function () {
+                  const transport = transports.createFileTransport(...args);
+                  transport.close();
+                  assert(typeof transport, typeof w_transports.File)
+                  assert(transport.level, args[1]);
+                  assert(transport.dirname, args[2])
+                  assert(transport.filename,  "Global_" + args[1] +  "_pid_" + pid + "_" + ppid + ".log")
+                });
+          });
+          after(function () {
+            rimraf("./test/.TempFilesTrasport")
+          });
+      });
+  });
