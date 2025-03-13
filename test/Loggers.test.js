@@ -103,4 +103,20 @@ describe('Trasports', function () {
         assert(logger.level, "info");
 
       });
+    describe('LogMsg', function () {
+      const tests = [
+          {args: ["info", [transports.createConsoleTransport("A/Path/To/File", "info")]]},
+          {args: ["error", [transports.createConsoleTransport("A/Path/To/File", "error")]]}
+        ];
+      
+        tests.forEach(({args}) => {
+          it(`can log a ${args[0]} message in a logger with ${args[1].length} transporters`, function () {
+              const logger = factory.createLogger(...args);
+              logger.log(args[0], args[0] + " msg")
+              logger.close();
+              assert(typeof logger, typeof w_logger)
+              assert(logger.level, args[0]);
+          });
+        });
+      });
 });
