@@ -1,21 +1,17 @@
-const { combine, timestamp, label, printf, colorize } = require('winston').format;
+const { combine, timestamp, label, printf, colorize} = require('winston').format;
 const {cwd, title, pid} = require("node:process")
 
-function getInfoFormat() { 
-    return printf(({ level, message, label, timestamp }) => {
-        return `${timestamp.split(".")[0]} ${level}: [${label}]:- ${message}`;
-        }); 
+function getInfoFormat(options) { 
+    const {level, message, label, timestamp} = options
+    return `${timestamp.split(".")[0]} ${level}: [${label}]:- ${message}`;
 }
-
-function getErrorFormat() { 
-  const stack_origin = (new Error().stack.split("\n")[1].trim().split(cwd())[1].replace(")", ""))
-    return printf(({ level, message, label, timestamp}) => {
-        return `${timestamp.split(".")[0]} ${level}: [${label}]:- ${message} from process ${title}(${pid})`;
-    }); 
+function getErrorFormat(options) { 
+    const {level, message, label, timestamp} = options
+    return `${timestamp.split(".")[0]} ${level}: [${label}]:- ${message} from process ${title}(${pid})`;
 }
 
 function selectBaseFormat(level) {
-    return eval("get" + level[0].toUpperCase() + level.substring(1) + "Format()");
+    return printf(eval("get" + level[0].toUpperCase() + level.substring(1) + "Format"));
 }
 
 function getConsoleFormat(name, level) {
