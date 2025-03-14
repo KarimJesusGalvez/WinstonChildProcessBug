@@ -29,4 +29,4 @@ function getFileFormat(name, level) {
     selectBaseFormat(level));
 }
 
-module.exports = {getFileFormat, getConsoleFormat}
+module.exports = {getFileFormat, getConsoleFormat, selectBaseFormat, getErrorFormat, getInfoFormat}
