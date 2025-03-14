@@ -8,6 +8,7 @@ const w_logger = require('winston').Logger;
 const w_transports = require('winston').transports;
 const assert = require("assert");
 const rimraf = require("rimraf").windowsSync
+const testTempFilePath = resolve(__dirname + sep + "__TestTempFiles")
 
 
 describe('Formats', function () {
@@ -60,8 +61,8 @@ describe('Trasports', function () {
           mkdirSync("./test/__TestTempFiles", { recursive: true } )
         });
         const tests = [
-            {args: ["PathTo/MsgOrigin", "info", resolve(__dirname + "/__TestTempFiles")]},
-            {args: ["PathTo/MsgOrigin", "error", resolve(__dirname + "/__TestTempFiles")]}
+            {args: ["PathTo/MsgOrigin", "info", testTempFilePath]},
+            {args: ["PathTo/MsgOrigin", "error", testTempFilePath]}
           ];
           tests.forEach(({args}) => {
               it(`can generate an ${args[1]} file format with a path`, function () {
