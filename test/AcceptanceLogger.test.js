@@ -1,7 +1,7 @@
 const {mkdirSync, statSync} = require('node:fs');
 const {pid, ppid} = require('node:process');
 const {resolve, sep} = require("node:path")
-const formats = require('../Config/Loggers/Formats');
+const {getConsoleFormat, getFileFormat} = require('../Config/Loggers/Formats');
 const transports = require('../Config/Loggers/Transports');
 const factory = require('../Config/Loggers/LoggerFactory');
 const w_logger = require('winston').Logger;
@@ -11,7 +11,7 @@ const rimraf = require("rimraf").windowsSync
 const testTempFilePath = resolve(__dirname + sep + "__TestTempFiles")
 
 
-describe('Formats', function () {
+describe('Acceptance Formats', function () {
 
   describe('CreateConsoleFormat', function () {
     const tests = [
@@ -21,7 +21,7 @@ describe('Formats', function () {
     
       tests.forEach(({args}) => {
         it(`can generate an ${args[1]} console format with a path`, function () {
-            const format = formats.getConsoleFormat(...args);
+            const format = getConsoleFormat(...args);
             assert(format.Format, "function")
         });
       });
@@ -33,14 +33,14 @@ describe('Formats', function () {
         ];
         tests.forEach(({args}) => {
             it(`can generate an ${args[1]} file format with a path`, function () {
-                const format = formats.getFileFormat(...args);
+                const format = getFileFormat(...args);
                 assert(format.Format, "function")
             });
         });
     });
 });
 
-describe('Trasports', function () {
+describe('Acceptance Trasports', function () {
 
     describe('CreateConsoleTransport', function () {
       const tests = [
@@ -74,7 +74,7 @@ describe('Trasports', function () {
       });
   });
 
-describe('LoggerFactory', function () {
+describe('Acceptance LoggerFactory', function () {
   before(function () {
     mkdirSync(testTempFilePath, { recursive: true } )
   });
