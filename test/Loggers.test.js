@@ -1,4 +1,4 @@
-const { mkdirSync, rmSync} = require('node:fs');
+const {mkdirSync, statSync} = require('node:fs');
 const {pid, ppid} = require('node:process');
 const {resolve, sep} = require("node:path")
 const formats = require('../Config/Loggers/Formats');
@@ -57,9 +57,6 @@ describe('Trasports', function () {
         });
       });
       describe('CreateFileTransport', function () {
-        before(function () {
-          mkdirSync("./test/__TestTempFiles", { recursive: true } )
-        });
         const tests = [
             {args: ["PathTo/MsgOrigin", "info", testTempFilePath]},
             {args: ["PathTo/MsgOrigin", "error", testTempFilePath]}
@@ -74,50 +71,80 @@ describe('Trasports', function () {
                   assert(transport.filename,  "Global_" + args[1] +  "_pid_" + pid + "_" + ppid + ".log")
                 });
           });
-          after(function () {
-            try{rimraf("./test/__TestTempFiles");}catch{}
-          });
       });
   });
 
-  describe('LoggerFactory', function () {
-
-    describe('CreateLogger', function () {
-      const tests = [
-          {args: ["info", []]},
-          {args: ["error", []]}
-        ];
-      
-        tests.forEach(({args}) => {
-          it(`can create a ${args[0]} logger with ${args[1].length} transporters`, function () {
-              const logger = factory.createLogger(...args);
-              logger.close();
-              assert(typeof logger, typeof w_logger)
-              assert(logger.level, args[0]);
-          });
+describe('LoggerFactory', function () {
+  before(function () {
+    mkdirSync(testTempFilePath, { recursive: true } )
+  });
+  
+  describe('CreateLogger', function () {
+    const tests = [
+        {args: ["info", []]},
+        {args: ["error", []]}
+      ];
+    
+      tests.forEach(({args}) => {
+        it(`can create a ${args[0]} logger with ${args[1].length} transporters`, function () {
+            const logger = factory.createLogger(...args);
+            logger.close();
+            assert(typeof logger, typeof w_logger)
+            assert(logger.level, args[0]);
         });
       });
-      it(`can generate a default logger`, function () {
-        const logger = factory.createDefaultLogger("testOrigin");
-        logger.close();
-        assert(typeof logger, typeof w_logger)
-        assert(logger.level, "info");
+    });
+    it(`can generate a default logger`, function () {
+      const logger = factory.createDefaultLogger("testOrigin");
+      logger.close();
+      assert(typeof logger, typeof w_logger)
+      assert(logger.level, "info");
 
+    });
+  describe('LogMsg to console', function () {
+    const tests = [
+        {args: ["info", [transports.createConsoleTransport("A/Path/To/File", "info")]]},
+        {args: ["error", [transports.createConsoleTransport("A/Path/To/File", "error")]]}
+      ];
+    
+      tests.forEach(({args}) => {
+        it(`can log a ${args[0]} message in a console logger with ${args[1].length} transporters`, function () {
+            const logger = factory.createLogger(...args);
+            logger.log(args[0], args[0] + " msg")
+            logger.close();
+            assert(typeof logger, typeof w_logger)
+            assert(logger.level, args[0]);
+        });
       });
-    describe('LogMsg', function () {
+
+      // TODO test with 2 transports: <level, > level, === level
+    });
+    describe('LogMsg to File', function () {
       const tests = [
-          {args: ["info", [transports.createConsoleTransport("A/Path/To/File", "info")]]},
-          {args: ["error", [transports.createConsoleTransport("A/Path/To/File", "error")]]}
+          {args: ["info", [transports.createFileTransport("PathTo/MsgOrigin", "info", testTempFilePath)]]},
+          {args: ["error", [transports.createFileTransport("PathTo/MsgOrigin", "error", testTempFilePath)]]}
         ];
       
         tests.forEach(({args}) => {
-          it(`can log a ${args[0]} message in a logger with ${args[1].length} transporters`, function () {
+          it(`can log a ${args[0]} message in a file logger with ${args[1].length} transporters`, function () {
+              const filename = "Global_" + args[0] +  "_pid_" + pid + "_" + ppid + ".log"
+              
               const logger = factory.createLogger(...args);
               logger.log(args[0], args[0] + " msg")
-              logger.close();
+              logger.transports.forEach((t)=> {t.close();})
+              
               assert(typeof logger, typeof w_logger)
               assert(logger.level, args[0]);
+              assert(typeof logger.transports[0], typeof w_transports.File)
+              assert(logger.transports[0].level, args[1]);
+              assert(logger.transports[0].dirname, args[2])
+              assert(logger.transports[0].filename, filename)
+              assert(statSync(testTempFilePath + sep + filename).size > 0);
           });
         });
       });
+  // TODO test with 2 transports: <level, > level, === level
+  after(function () {
+    try{rimraf(testTempFilePath);}catch{}
+  });
 });
