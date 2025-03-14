@@ -4,7 +4,7 @@
   "description": "winsto tryout",
   "main": "Runner.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --full-trace --jobs 1"
   },
   "author": "",
   "license": "ISC",
