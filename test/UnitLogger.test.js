@@ -33,7 +33,7 @@ describe('Unit get Formats', function () {
         assert.equal(format.template, formats.getInfoFormat)    
     });
     it('getFileFormat', function () {
-        var FormatsMod = rewire("../Config/Loggers/Formats.js");
+        const FormatsMod = rewire("../Config/Loggers/Formats.js");
 
         function mocked_combine () {
             assert.equal(arguments.length, 3)
@@ -42,12 +42,12 @@ describe('Unit get Formats', function () {
             assert.equal(arguments[2].template.name, formats.getInfoFormat.name)
             assert.equal(typeof arguments[2], typeof winston.format.printf())
         };
-        FormatsMod.__set__("combine", mocked_combine);
-        FormatsMod.getFileFormat("A", "info");
+        FormatsMod.__with__({combine: mocked_combine})
+        (function () {FormatsMod.getFileFormat("A", "info");});
     });
 
     it('getConsoleFormat', function () {
-        var FormatsMod = rewire("../Config/Loggers/Formats.js");
+        const FormatsMod = rewire("../Config/Loggers/Formats.js");
 
         function mocked_combine () {
             assert.equal(arguments.length, 4)
@@ -57,7 +57,7 @@ describe('Unit get Formats', function () {
             assert.equal(arguments[3].template.name, formats.getErrorFormat.name)
             assert.equal(typeof arguments[3], typeof winston.format.printf())
         };
-        FormatsMod.__set__("combine", mocked_combine);
-        FormatsMod.getConsoleFormat("B", "error");
+        FormatsMod.__with__({combine: mocked_combine})
+        (function () {FormatsMod.getConsoleFormat("B", "error");});
     });
 });
