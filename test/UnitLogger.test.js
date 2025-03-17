@@ -19,5 +19,15 @@ describe('Unit Formats', function () {
         const format = formats.getErrorFormat(formatOptions);     
         assert.equal("date error: [path as label]:- msg from ", format.split("process")[0])
     });
-});
+}); 
+describe('Unit get Formats', function () {
 
+    it('select error base format', function () {
+        const format = formats.selectBaseFormat("error");
+        assert(format.template, formats.getErrorFormat)    
+    });
+    it('select info base format', function () {
+        const format = formats.selectBaseFormat("info");
+        assert(format.template, formats.getInfoFormat)    
+    });
+});
