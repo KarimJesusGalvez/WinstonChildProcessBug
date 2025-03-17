@@ -10,8 +10,7 @@ function createLogger(level="info", transports) {
         transports: transports,
     })
 };
-function createDefaultLogger(filepath) {
-    level = "info"
+function createDefaultLogger(filepath, level = "info") {
     return createLogger(level, [createConsoleTransport(filepath, level), createFileTransport(filepath, level, cwd() + sep + "Reports")])
 };
 
