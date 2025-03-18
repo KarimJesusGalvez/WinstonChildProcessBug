@@ -7,11 +7,19 @@ function exec_cmd (cmd, sync = true) {
     try {
         if (sync) {return execSync( cmd, { stdio: 'inherit' } )}
         else {
-            const { stdout, stderr } = exec(cmd, { stdio: 'inherit' })
-            console.log(stdout)
-            console.error(stderr)};
+            let child = exec(cmd, { stdio: 'inherit' });
+            child.on('spawn', ()=> logger.log("info", 'async ' + "task: " + cmd  +" Started"));
+            child.stdout.on('data', parseChildData);
+            child.on('close', ()=> logger.log("info", 'async ' + "task: '" + cmd  +"' finished with code " + child.exitCode));
+        };
     }
     catch (error){ console.error("Error in exec_cmd: " + error) };
+}
+
+function parseChildData(data) {
+    data = data.replace("\n", "").replace("[31m", "").replace("[34m", "").replace("[39m", "")
+    console.info(`Received chunk ${data}`);
+    //logger.log("info", `Received chunk ${data}`);
 }
 
 logger.log("info", "Running ChildRunner...");
