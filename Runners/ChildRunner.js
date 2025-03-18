@@ -17,7 +17,7 @@ function exec_cmd (cmd, sync = true) {
 }
 
 function parseChildData(data) {
-    data = data.replace("\n", "").replace("[31m", "").replace("[34m", "").replace("[39m", "")
+    data = data.replace("\n", "").replaceAll(/\[[0-9]?[0-9]m/g, "")
     console.info(`Received chunk ${data}`);
     //logger.log("info", `Received chunk ${data}`);
 }
