@@ -17,9 +17,12 @@ function exec_cmd (cmd, sync = true) {
 }
 
 function parseChildData(data) {
-    data = data.replace("\n", "").replaceAll(/\[[0-9]?[0-9]m/g, "")
-    console.info(`Received chunk ${data}`);
-    //logger.log("info", `Received chunk ${data}`);
+    data = data.replace("\n", "")
+    if (data.search("error") > -1) {
+        data = data.replaceAll(/\[[0-9]?[0-9]m/g, "")
+        logger.log("error", `Received error in main process ${data}`);
+    }
+    else { console.info(`Received chunk in main process: ${data}`); }
 }
 
 logger.log("info", "Running ChildRunner...");
