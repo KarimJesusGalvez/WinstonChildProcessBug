@@ -10,11 +10,20 @@ afterEach(() => {
   });
 
 describe('Unit Formats', function () {
-
+    it('getDebugFormat valid', function () {
+        const formatOptions = {level: "debug", message: "msg", label: "path as label", timestamp: "date.time"}
+        const format = formats.getDebugFormat(formatOptions);
+        assert.equal("date debug: [path as label]:- msg from ", format.split("process")[0])
+    });
     it('getInfoFormat valid', function () {
         const formatOptions = {level: "info", message: "msg", label: "path as label", timestamp: "date.time"}
         const format = formats.getInfoFormat(formatOptions);
         assert.equal(format, "date info: [path as label]:- msg")
+    });
+    it('getWarnFormat valid', function () {
+        const formatOptions = {level: "warn", message: "msg", label: "path as label", timestamp: "date.time"}
+        const format = formats.getWarnFormat(formatOptions);
+        assert.equal("date warn: [path as label]:- msg from ", format.split("process")[0])
     });
     it('getErrorFormat', function () {
         const formatOptions = {level: "error", message: "msg", label: "path as label", timestamp: "date.time"}
@@ -28,9 +37,17 @@ describe('Unit get Formats', function () {
         const format = formats.selectBaseFormat("error");
         assert.equal(format.template, formats.getErrorFormat)    
     });
+    it('select warn base format', function () {
+        const format = formats.selectBaseFormat("warn");
+        assert.equal(format.template, formats.getWarnFormat)    
+    });
     it('select info base format', function () {
         const format = formats.selectBaseFormat("info");
         assert.equal(format.template, formats.getInfoFormat)    
+    });
+    it('select debug base format', function () {
+        const format = formats.selectBaseFormat("debug");
+        assert.equal(format.template, formats.getDebugFormat)    
     });
     it('getFileFormat', function () {
         const FormatsMod = rewire("../Config/Loggers/Formats.js");
@@ -53,7 +70,7 @@ describe('Unit get Formats', function () {
             assert.equal(arguments.length, 4)
             assert.deepEqual(arguments[0].options.label, "B")
             assert.equal(Object.keys(arguments[1].options).length, 0)
-            assert.equal(arguments[2].options.colors.error, "red")
+            assert.equal(arguments[2].options.colors.error, "bold red blackBG")
             assert.equal(arguments[3].template.name, formats.getErrorFormat.name)
             assert.equal(typeof arguments[3], typeof winston.format.printf())
         };
