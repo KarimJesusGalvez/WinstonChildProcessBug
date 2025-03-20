@@ -3,11 +3,12 @@ const assert = require("assert");
 const sinon = require("sinon");
 const rewire = require("rewire");
 const winston = require("winston");
+const { ChangeLevelType } = require('../Config/Loggers/levels');
 
 
 afterEach(() => {
     sinon.restore();
-  });
+});
 
 describe('Unit Formats', function () {
     it('getDebugFormat valid', function () {
@@ -76,5 +77,33 @@ describe('Unit get Formats', function () {
         };
         FormatsMod.__with__({combine: mocked_combine})
         (function () {FormatsMod.getConsoleFormat("B", "error");});
+    });
+});
+describe('Unit get Formats', function () {
+    let tests = [
+        {args: ["debug", ""]},
+        {args: ["info", ""]},
+        {args: ["warn", 1]},
+        {args: ["error", 1]},
+      ];
+    
+      tests.forEach(({args}) => {
+        it(`can parse a ${typeof args[0]} level into a ${typeof args[1]} level`, function () {
+            const newLevel = ChangeLevelType(args[0], args[1])
+            assert.equal(typeof newLevel, typeof args[1])
+            assert.equal(ChangeLevelType(newLevel, args[0]), args[0])
+        });
+      });
+    tests = [
+        {args: [999, ""]},
+        {args: ["None", 1]}
+      ];
+      tests.forEach(({args}) => {
+
+        it(`cannot parse an invalid ${typeof args[0]} into a ${typeof args[1]} level`, function () {
+            const newLevel = ChangeLevelType(args[0], args[1])
+            assert(newLevel === undefined)
+            //assert.t(ChangeLevelType(newLevel, args[0]), args[0])
+        });
     });
 });

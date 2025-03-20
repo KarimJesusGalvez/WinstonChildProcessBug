@@ -1,5 +1,6 @@
 const { combine, timestamp, label, printf, colorize} = require('winston').format;
 const {cwd, title, pid} = require("node:process")
+const { ChangeLevelType } = require('./levels');
 
 const colors = {
     styles: {bold: "bold", dim: "dim", italic: "italic", underline: "underline", inverse: "inverse", hidden:  "hidden",  strikethrough: "strikethrough"},
@@ -37,10 +38,12 @@ function getErrorFormat(options) {
 }
 
 function selectBaseFormat(level) {
+    level = ChangeLevelType(level, "")
     return printf(eval("get" + level[0].toUpperCase() + level.substring(1) + "Format"));
 }
 
 function getConsoleFormat(name, level) {
+    level = ChangeLevelType(level, "")
     return combine(
     label({ label: name }),
     timestamp(),
@@ -49,6 +52,7 @@ function getConsoleFormat(name, level) {
 }
 
 function getFileFormat(name, level) {
+    level = ChangeLevelType(level, "")
     return combine(
     label({ label: name }),
     timestamp(),
