@@ -9,7 +9,7 @@ const w_transports = require('winston').transports;
 const assert = require("assert");
 const rimraf = require("rimraf").windowsSync
 const testTempFilePath = resolve(__dirname + sep + "__TestTempFiles")
-
+const {level} = require("../Config/Loggers/levels")
 
 describe('Acceptance Formats', function () {
 
@@ -71,6 +71,39 @@ describe('Acceptance Trasports', function () {
                   assert(transport.filename,  "Global_" + args[1] +  "_pid_" + pid + "_" + ppid + ".log")
                 });
           });
+      });
+      describe("CreateDefaultTransport", function () {
+        describe("CreateDefault<Debug", function () {
+          const tests = [
+            { args: ["PathTo/MsgOrigin", "debug", testTempFilePath] },
+            // TODO  { args: ["PathTo/MsgOrigin", "silly", testTempFilePath] },
+          ];
+          tests.forEach(({ args }) => {
+            it(`can create default transports for level ${args[1]}`, function () {
+              const transport = transports.generateDefaultTransports(...args);
+              assert.equal(transport.length, 2);
+              transport.forEach((t) =>
+                assert.match(t.level, new RegExp(`${args[1]}`))
+              );
+            });
+          });
+        });
+
+        describe("CreateDefault>Debug", function () {
+          const tests = [
+            { args: ["PathTo/MsgOrigin", "error", testTempFilePath] },
+            { args: ["PathTo/MsgOrigin", "info", testTempFilePath] },
+          ];
+          tests.forEach(({ args }) => {
+            it(`can create default transports for level ${args[1]} and add a debug file transport`, function () {
+              const transport = transports.generateDefaultTransports(...args);
+              assert.equal(transport.length, 3);
+              transport.forEach((t) =>
+                assert.match(t.level, new RegExp(`${args[1]}||debug`))
+              );
+            });
+          });
+        });
       });
   });
 
